@@ -109,10 +109,17 @@ class TaskManager:
         return
 
     def search_tasks(self, **kwargs) -> list[Task]:
-        results = []
+        results = {}
         for key, value in kwargs.items():
-            for task in self.tasks:
-                if getattr(task, key) == value:
-                    results.append(task)
-        results_unique = list(dict.fromkeys(results))
+            if value:
+                results[key] = []
+                for task in self.tasks:
+                    if getattr(task, key) == value:
+                        results[key].append(task)
+
+        sets = [set(value) for value in results.values()]
+        if sets:
+            results_unique = list(set.intersection(*sets))
+        else:
+            return []
         return results_unique
